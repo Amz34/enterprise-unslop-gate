@@ -1,0 +1,28 @@
+name: 'Enterprise Unslop Quality Gate'
+description: 'Automated GitHub Action to enforce zero AI UI slop, redline craft standards, and automated PR annotations.'
+inputs:
+  target-path:
+    description: 'Path or glob to scan for UI slop'
+    required: false
+    default: '.'
+  fail-on-findings:
+    description: 'Whether to break the CI/CD pipeline on slop findings'
+    required: false
+    default: 'true'
+  sarif-output:
+    description: 'Path to output SARIF report for GitHub Code Scanning'
+    required: false
+    default: 'unslop-results.sarif'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run Unslop Enterprise Gate
+      shell: bash
+      run: |
+        echo "::group::Executing Enterprise Unslop Gate"
+        node ${{ github.action_path }}/scripts/enterprise-unslop-gate.js \
+          --target="${{ inputs.target-path }}" \
+          --fail="${{ inputs.fail-on-findings }}" \
+          --sarif="${{ inputs.sarif-output }}"
+        echo "::endgroup::"
